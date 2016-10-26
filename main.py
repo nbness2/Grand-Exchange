@@ -58,6 +58,31 @@ async def get_all_item_defs(min_id=0, max_id=31030, id_step=58, item_dir='items/
         await item_io.raw_close()
 
 
+async def write_tradeable_item_list(filename='tradeable.itm',
+                                    exclude_items=[str(i) for i in range(995,1005)],
+                                    item_dir='items/'):
+    """
+    This should only be a one time thing.
+    Will read all items from 'items/' and write all tradeable items to 'tradeable.itm'
+    """
+    tradeable_io = async_lib.AsyncRW(item_dir)
+    tradeable_items = []
+    try:
+        for item_id in listdir(item_dir):
+            await tradeable_io.set_filepath(item_dir+item_id)
+            await tradeable_io.raw_open()
+            item_id = item_id[:-4]
+            if (await tradeable_io.raw_readlines())[31] == 'Tradeable: Yes\n' and item_id not in exclude_items:
+                tradeable_items.append(item_id)
+            await tradeable_io.raw_close()
+        await tradeable_io.set_filepath(filename)
+        await tradeable_io.raw_open('w')
+        for item_id in tradeable_items:
+            await tradeable_io.raw_write(item_id+'\n')
+    finally:
+        await tradeable_io.raw_close()
+        del tradeable_io, tradeable_items
+
 
 
 async def make_item_database():
