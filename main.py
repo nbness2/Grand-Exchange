@@ -22,7 +22,7 @@ async def get_all_item_defs(min_id=0, max_id=31030, id_step=58,
     Scrapes all items and their defenitions\attributes (except for stats) from runelocus website
     """
     item_client = async_lib.AsyncClient(main_loop)
-    item_writer = async_lib.AsyncRW('items/')
+    item_io = async_lib.AsyncRW('items/')
     base_url = 'http://www.runelocus.com/item-details/?item_id={}'
     try:
         for curr_id in range(min_id, max_id, id_step):
@@ -30,11 +30,11 @@ async def get_all_item_defs(min_id=0, max_id=31030, id_step=58,
             content = await item_client.request(url_load)
             content = {item_id[47:]: [trim_html(data, name_xpath), trim_html(data, def_xpath)] for item_id, data in content.items()}
             for item_id, detail_table in content.items():
-                item_writer.set_filepath('items/{}.itm'.format(item_id))
+                item_io.set_filepath('items/{}.itm'.format(item_id))
                 try:
                     item_name = detail_table[0][0].text
-                    await item_writer.raw_open(mode='w')
-                    await item_writer.raw_write('item name: '+item_name[19:-1]+'\n')
+                    await item_io.raw_open(mode='w')
+                    await item_io.raw_write('item name: '+item_name[19:-1]+'\n')
                     for detail_element in detail_table[1][0].getiterator():
                         for idx, detail in enumerate(detail_element.getchildren()):
                             detail_text = detail.text.strip()
@@ -42,18 +42,18 @@ async def get_all_item_defs(min_id=0, max_id=31030, id_step=58,
                                 pass
                             else:
                                 if idx == 0:
-                                    await item_writer.raw_write(detail_text+' ')
+                                    await item_io.raw_write(detail_text+' ')
                                 else:
                                     await item_writer.raw_write(detail_text+'\n')
                     await item_writer.raw_close()
                 except IndexError:
-                    await item_writer.raw_close()
+                    await item_io.raw_close()
                     pass
-                await item_writer.raw_close()
+                await item_io.raw_close()
             print('finished batch', (curr_id/id_step)+1, 'at', time())
     finally:
         item_client.close()
-        await item_writer.raw_close()
+        await item_io.raw_close()
 
 
 async def change_extensions(directory, old_extension, new_extension):
