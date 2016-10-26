@@ -1,6 +1,5 @@
 import async_lib
 from lxml import html
-from os import listdir
 from time import time
 from os import listdir
 
@@ -57,11 +56,6 @@ async def get_all_item_defs(min_id=0, max_id=31030, id_step=58,
         await item_io.raw_close()
 
 
-async def change_extensions(directory, old_extension, new_extension):
-    for item in listdir(directory):
-        if item.endswith(old_extension):
-            filepath = '{}/{}'.format(directory, item)
-            rename(filepath, filepath[:-4]+new_extension)
 
 
 async def make_item_database():
