@@ -57,6 +57,7 @@ async def get_all_item_defs(min_id=0, max_id=31030, id_step=58, item_dir='items/
     finally:
         item_client.close()
         await item_io.raw_close()
+        del item_client, item_io, slice_len
 
 
 async def write_tradeable_item_list(filename='tradeable.itm',
@@ -109,7 +110,7 @@ async def verify_tradeable_items(tradeable_file='tradeable.itm', item_dir='items
         return True
     finally:
         await tradeable_io.raw_close()
-        del tradeable_io, unverified_ids, non_tradeable_ids
+        del tradeable_io, unverified_ids
 
 
 async def make_item_database():
