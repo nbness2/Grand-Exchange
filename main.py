@@ -1,6 +1,6 @@
 import async_lib
 from lxml import html
-from os import listdir, rename
+from os import listdir
 from time import time
 
 
