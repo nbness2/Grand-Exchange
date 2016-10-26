@@ -18,7 +18,8 @@ async def get_chunks(data, chunk_size, pad=None):
 async def get_all_item_defs(min_id=0, max_id=31030, id_step=58, item_dir='items/',
                             base_url='http://www.runelocus.com/item-details/?item_id={}',
                             name_xpath='//*[@id="main"]/article/div/div/h2',
-                            def_xpath='//*[@id="main"]/article/div/div/table'):
+                            def_xpath='//*[@id="main"]/article/div/div/table'
+                            ):
     """
     Scrapes all items and their defenitions\attributes (except for stats) from runelocus website
     """
@@ -60,7 +61,8 @@ async def get_all_item_defs(min_id=0, max_id=31030, id_step=58, item_dir='items/
 
 async def write_tradeable_item_list(filename='tradeable.itm',
                                     exclude_items=[str(i) for i in range(995,1005)],
-                                    item_dir='items/'):
+                                    item_dir='items/'
+                                    ):
     """
     This should only be a one time thing.
     Will read all items from 'items/' and write all tradeable items to 'tradeable.itm'
