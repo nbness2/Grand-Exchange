@@ -113,11 +113,33 @@ async def verify_tradeable_items(tradeable_file='tradeable.itm', item_dir='items
         del tradeable_io, unverified_ids
 
 
-async def make_item_database():
+async def make_item_dict(tradeable_file='tradeable.itm', item_dir='items/',
+                         line_nums=(0, 2, 3, 5, 6, 31, 32, 33),
+                         slice_lens=(11, 9, 14, 11, 11, 11, 11, 10),
+                         line_keys=('iname', 'examine', 'members', 'stackable', 'shopval', 'tradeable', 'highalch', 'lowalch')
+                         ):
     """
     Returns a dict containing all of the items and their relevant G.E. data (prices, names)
     """
-    pass
+    tradeable_io = async_lib.AsyncRW(tradeable_file)
+    item_dict = {}
+    try:
+        await tradeable_io.raw_open('r')
+        tradeable_items = await tradeable_io.readlines()
+        await tradeable_io.raw_close()
+        tradeable_items = [item_id.strip() for item_id in tradeable_items]
+        for item_id in tradeable_items:
+            await tradeable_io.set_filepath(item_dir+'{}.itm'.format(item_id))
+            data = await tradeable_io.readlines()
+            await tradeable_io.raw_close()
+            data = [line.strip() for line in data]
+            data = [data[line_num][slice_len:] for line_num, slice_len in zip(line_nums, slice_lens)]
+            item_dict[item_id] = {}
+            item_dict[item_id].update({line_key: value for line_key, value in zip(line_keys, data)})
+        return item_dict
+    finally:
+        await tradeable_io.raw_close()
+        del tradeable_io
 
 async def main():
     await get_all_item_defs()
