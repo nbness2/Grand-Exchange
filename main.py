@@ -83,6 +83,31 @@ async def write_tradeable_item_list(filename='tradeable.itm',
         await tradeable_io.raw_close()
         del tradeable_io, tradeable_items
 
+async def verify_tradeable_items(tradeable_file='tradeable.itm', item_dir='items/'):
+    """
+    this is to verify that all item_ids in your 'tradeable.itm' file are classified as tradeable in your 'items/' dir
+    :return:
+    """
+    tradeable_io = async_lib.AsyncRW(tradeable_file)
+    unverified_ids = []
+    non_tradeable_ids = []
+    try:
+        await tradeable_io.raw_open('r')
+        unverified_ids = await tradeable_io.raw_readlines()
+        await tradeable_io.raw_close()
+        unverified_ids = [item_id.strip() for item_id in unverified_ids]
+        non_tradeable_ids = []
+        for item_id in unverified_ids:
+            await tradeable_io.set_filepath(item_dir+'{}.itm'.format(item_id))
+            if (await tradeable_io.readlines())[31] != 'Tradeable: Yes\n':
+                non_tradeable_ids.append(item_id)
+            await tradeable_io.raw_close()
+        if len(non_tradeable_ids) != 0:
+            return non_tradeable_ids
+        return True
+    finally:
+        await tradeable_io.raw_close()
+        del tradeable_io, unverified_ids, non_tradeable_ids
 
 
 async def make_item_database():
