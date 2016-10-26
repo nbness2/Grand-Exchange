@@ -2,6 +2,7 @@ import async_lib
 from lxml import html
 from os import listdir
 from time import time
+from os import listdir
 
 
 def trim_html(data, xpath):
@@ -44,8 +45,8 @@ async def get_all_item_defs(min_id=0, max_id=31030, id_step=58,
                                 if idx == 0:
                                     await item_io.raw_write(detail_text+' ')
                                 else:
-                                    await item_writer.raw_write(detail_text+'\n')
-                    await item_writer.raw_close()
+                                    await item_io.raw_write(detail_text+'\n')
+                    await item_io.raw_close()
                 except IndexError:
                     await item_io.raw_close()
                     pass
