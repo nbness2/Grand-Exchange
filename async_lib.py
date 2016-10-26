@@ -19,13 +19,13 @@ class AsyncRW:
         self._cim = create_if_missing
         self._file = None
 
-    def set_filepath(self, newpath):
+    async def set_filepath(self, newpath):
         """
         Sets the current filepath (self._fp) to newpath for the asynchronous file reader\writer.
         """
         self._fp = newpath
 
-    def set_cim(self, cim):
+    async def set_cim(self, cim):
         self._cim = cim
 
     async def _w(self, data, mode):
