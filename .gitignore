@@ -1,14 +1,12 @@
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
-__pycache__/
 
 # Folder config file
 Desktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
-items/
 
 # Windows Installer files
 *.cab
@@ -18,7 +16,12 @@ items/
 
 # Windows shortcuts
 *.lnk
+
+#my garbo
+items/
+__pycache__/
 .idea
+*.itm
 
 # =========================
 # Operating System Files
