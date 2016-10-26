@@ -15,22 +15,24 @@ async def get_chunks(data, chunk_size, pad=None):
     return tuple([data[chunk_size*i:chunk_size*(i+1)] for i in range(len(data)//chunk_size)])
 
 
-async def get_all_item_defs(min_id=0, max_id=31030, id_step=58,
+async def get_all_item_defs(min_id=0, max_id=31030, id_step=58, item_dir='items/',
+                            base_url='http://www.runelocus.com/item-details/?item_id={}',
                             name_xpath='//*[@id="main"]/article/div/div/h2',
                             def_xpath='//*[@id="main"]/article/div/div/table'):
     """
     Scrapes all items and their defenitions\attributes (except for stats) from runelocus website
     """
     item_client = async_lib.AsyncClient(main_loop)
-    item_io = async_lib.AsyncRW('items/')
-    base_url = 'http://www.runelocus.com/item-details/?item_id={}'
+    item_io = async_lib.AsyncRW(item_dir)
+    slice_len = len(base_url[:-2])
     try:
         for curr_id in range(min_id, max_id, id_step):
             url_load = [base_url.format(item_id) for item_id in range(curr_id, curr_id+id_step+1)]
             content = await item_client.request(url_load)
-            content = {item_id[47:]: [trim_html(data, name_xpath), trim_html(data, def_xpath)] for item_id, data in content.items()}
+            content = {item_id[slice_len:]: [trim_html(data, name_xpath), trim_html(data, def_xpath)]
+                       for item_id, data in content.items()}
             for item_id, detail_table in content.items():
-                item_io.set_filepath('items/{}.itm'.format(item_id))
+                item_io.set_filepath(item_dir+'{}.itm'.format(item_id))
                 try:
                     item_name = detail_table[0][0].text
                     await item_io.raw_open(mode='w')
